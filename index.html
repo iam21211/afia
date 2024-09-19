@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Button</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #container {
+            text-align: center;
+            position: relative;
+        }
+        #text {
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #yes-button {
+            padding: 10px 20px;
+            background-color: #f8bbd0; /* Light pink color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        #button {
+            position: absolute;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #celebration {
+            display: none;
+            margin-top: 20px;
+            font-size: 24px;
+            color: #f39c12;
+            position: relative;
+        }
+        #image {
+            display: none;
+            margin-top: 20px;
+            width: 300px;
+            height: 382px;
+            border-radius: 10px;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #f39c12;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="text">তোমার ফ্রেন্ড কে আমারে দিবা, মিথিলা</div>
+        <button id="yes-button">Yes</button>
+        <button id="button">No</button>
+        <div id="celebration">🎉🎉 Now You Both Are Mine! 🎉🎉</div>
+        <img id="image" src="img.png" alt="Celebration Image">
+    </div>
+
+    <script>
+        const button = document.getElementById('button');
+        const yesButton = document.getElementById('yes-button');
+        const celebration = document.getElementById('celebration');
+        const image = document.getElementById('image');
+        const text = document.getElementById('text');
+        const moveAmount = 20; // Amount of movement
+        const edgeDropAmount = 100; // Amount of movement when hitting the edge
+
+        // Function to handle button movement
+        function moveButton(event) {
+            const rect = button.getBoundingClientRect();
+            const buttonX = rect.left + rect.width / 2;
+            const buttonY = rect.top + rect.height / 2;
+
+            let mouseX, mouseY;
+
+            // Check if the event is a touch event or mouse event
+            if (event.type === 'touchmove') {
+                mouseX = event.touches[0].clientX;
+                mouseY = event.touches[0].clientY;
+            } else {
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+            }
+
+            const deltaX = mouseX - buttonX;
+            const deltaY = mouseY - buttonY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            if (distance < 100) {
+                let newLeft = button.offsetLeft + (mouseX < buttonX ? moveAmount : -moveAmount);
+                let newTop = button.offsetTop + (mouseY < buttonY ? moveAmount : -moveAmount);
+
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const buttonWidth = button.offsetWidth;
+                const buttonHeight = button.offsetHeight;
+
+                // Keep the button within the viewport
+                if (newLeft < 0) {
+                    newLeft = 0;
+                    newTop -= edgeDropAmount;
+                } else if (newLeft + buttonWidth > viewportWidth) {
+                    newLeft = viewportWidth - buttonWidth;
+                    newTop -= edgeDropAmount;
+                }
+                if (newTop < 0) {
+                    newTop = 0;
+                    newLeft -= edgeDropAmount;
+                } else if (newTop + buttonHeight > viewportHeight) {
+                    newTop = viewportHeight - buttonHeight;
+                    newLeft -= edgeDropAmount;
+                }
+
+                button.style.left = `${newLeft}px`;
+                button.style.top = `${newTop}px`;
+            }
+        }
+
+        // Add event listeners for both mouse and touch events
+        document.addEventListener('mousemove', moveButton);
+        document.addEventListener('touchmove', moveButton);
+        document.addEventListener('touchstart', moveButton); // Start moving when touch starts
+
+        // Button click effects
+        yesButton.addEventListener('click', () => {
+            text.textContent = "Now you both are mine";
+            celebration.style.display = 'block';
+            image.style.display = 'block';
+            yesButton.style.display = 'none';
+            button.style.display = 'none';
+        });
+
+    </script>
+</body>
+</html>
